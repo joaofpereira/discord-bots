@@ -2,8 +2,14 @@ const discord = require('discord.js');
 const winston = require('winston');
 const schedule = require('node-schedule');
 const request = require('request');
-
 const mergeImg = require('merge-img')
+const fs = require('fs');
+
+// creating folder to put matches generated images
+var dir = './images/teams';
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
 
 // authentication tokens and settings
 var auth = require('./auth.json');
@@ -58,7 +64,7 @@ function scheduleGame(game) {
     
     // for tests
     notificationScheduleDate = new Date()
-    notificationScheduleDate.setMinutes(notificationScheduleDate.getMinutes() + 2)
+    notificationScheduleDate.setSeconds(notificationScheduleDate.getSeconds() + 10)
 
     var hours = ("0" + notificationScheduleDate.getHours()).slice(-2);
     var minutes = ("0" + notificationScheduleDate.getMinutes()).slice(-2);
@@ -87,7 +93,7 @@ function scheduleGame(game) {
                     { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
                     { name: 'Horário', value: `${hours}:${minutes}h`},
                     { name: 'Canal', value: 'O Tasco :soccer: :beer: :hotdog:' },
-                    { name: 'Bilhetes com', value: `<@${client.users.cache.get("165606532325572609")}> e <@${client.users.cache.get("248171304652374017")}>` },
+                    { name: 'Bilhetes com', value: `${client.users.cache.get("165606532325572609")} e ${client.users.cache.get("248171304652374017")}` },
                 )
                 .setImage(`attachment://${imageAttachmentName}`)
                 .attachFiles(attachments);
