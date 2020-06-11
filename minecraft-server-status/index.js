@@ -8,7 +8,7 @@ var settings = require('./settings.json');
 
 const logger = winston.createLogger({
     level: 'debug',
-    format: combine(
+    format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.prettyPrint()
       ),
