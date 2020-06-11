@@ -1,3 +1,3 @@
-# discord-football-announcer
+# discord-bots
 
 TBD
