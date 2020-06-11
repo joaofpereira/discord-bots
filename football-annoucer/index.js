@@ -44,8 +44,11 @@ const client = new discord.Client();
 
 const logger = winston.createLogger({
     level: 'debug',
-    format: winston.format.json(),
-    defaultMeta: { service: 'bot-service' },
+    format: combine(
+        winston.format.timestamp(),
+        winston.format.prettyPrint()
+      ),
+    defaultMeta: { service: 'football-announcer' },
     transports: [
       new winston.transports.Console({
         format: winston.format.combine(
@@ -59,7 +62,7 @@ const logger = winston.createLogger({
 
 function scheduleGame(game) {
     var gameScheduleDate = new Date(Date.parse(String(game.utcDate)));
-    var notificationScheduleDate = gameScheduleDate;
+    var notificationScheduleDate = new Date(gameScheduleDate);
     notificationScheduleDate.setMinutes(notificationScheduleDate.getMinutes() - 15)
 
     var hours = ("0" + notificationScheduleDate.getHours()).slice(-2);
@@ -94,7 +97,7 @@ function scheduleGame(game) {
                 .setImage(`attachment://${imageAttachmentName}`)
                 .attachFiles(attachments);
             
-            client.channels.cache.get('718535471294054419').send({embed: embedMessage});
+            client.channels.cache.get('718031370584195114').send({embed: embedMessage});
         });
     });
 }

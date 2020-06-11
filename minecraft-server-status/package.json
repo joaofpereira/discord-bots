@@ -1,0 +1,24 @@
+{
+  "name": "trovesaurus-fetcher",
+  "version": "1.0.0",
+  "description": "A discord bot that fetches all Trovesaurus news to a specific channel.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaofpereira/trovesaurus-fetcher.git"
+  },
+  "author": "Joao Pereira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joaofpereira/trovesaurus-fetcher/issues"
+  },
+  "homepage": "https://github.com/joaofpereira/trovesaurus-fetcher#readme",
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "is-port-reachable": "^3.0.0",
+    "node-schedule": "^1.3.2"
+  }
+}

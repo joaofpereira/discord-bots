@@ -1,5 +1,5 @@
 {
-    "daily_cron_job": "0 17 * * *",
+    "daily_cron_job": "0 13 * * *",
     "bot_prefix_command": "+",
     "football_data_api": "http://api.football-data.org/v2/",
     "football_data_competitions": "2017",
