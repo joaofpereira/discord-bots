@@ -44,7 +44,7 @@ const client = new discord.Client();
 
 const logger = winston.createLogger({
     level: 'debug',
-    format: combine(
+    format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.prettyPrint()
       ),
