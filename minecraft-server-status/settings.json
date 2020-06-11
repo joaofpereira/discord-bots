@@ -1,0 +1,8 @@
+{
+    "server_ip_address":"2.83.157.109",
+    "server_port": 25565,
+    "cron_job": "* * * * *",
+    "notifications_channel": "720585912320524329",
+    "allowed_command_channels": ["719536540791078966"],
+    "admin_id": "165606532325572609"
+}
