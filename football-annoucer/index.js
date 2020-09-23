@@ -2,49 +2,13 @@ const discord = require('discord.js');
 const winston = require('winston');
 const schedule = require('node-schedule');
 const request = require('request');
-const mergeImg = require('merge-img')
+const mergeImg = require('merge-img');
 const fs = require('fs');
-
-// creating folder to put matches generated images
-var dir = './images/teams';
-if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir);
-}
-
-// authentication tokens and settings
-var auth = require('./auth.json');
-var settings = require('./settings.json');
-
-async function print_image(teamsImagesPath, homeTeam, awayTeam, callback) {
-    var imagePath = `./images/games/${homeTeam}vs${awayTeam}.png`;
-    // cant have special characters or whitespaces
-    var imageAttachmentName = `${homeTeam}vs${awayTeam}`.replace(/[^a-zA-Z ]|\s/g, "") + ".png";
-    await mergeImg(
-        [
-            `${teamsImagesPath}${homeTeam}.png`,
-            `${teamsImagesPath}${awayTeam}.png`
-        ]).then((img) => {
-            // Save image as file
-            img.write(imagePath, () => {  
-                logger.debug(`Generated image for game ${homeTeam} vs ${awayTeam} at ./images/games/`);
-                callback(imagePath, imageAttachmentName)
-            });
-        });
-}
-
-// formats a Date into the format "year-month-day"
-function GetSimplifiedDate(date) {
-    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
-    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(date)
-    return `${year}-${month}-${day}`
-}
-
-// Create an instance of a Discord client
-const client = new discord.Client();
+const path = require('path');
 
 const logger = winston.createLogger({
     level: 'debug',
-    format: combine(
+    format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.prettyPrint()
       ),
@@ -59,6 +23,45 @@ const logger = winston.createLogger({
       new winston.transports.File({ filename: 'logs' }),
     ],
 });
+
+// Create an instance of a Discord client
+const client = new discord.Client();
+
+// creating folder to put matches generated images: path starts in the root directory discord-bots
+var dir = path.join(module.path, '/images/games/');
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir, {recursive: true}, err => {
+        logger.error(`Something went wrong whn trying to create games directory. ${err}`)
+    });
+}
+
+// authentication tokens and settings
+var auth = require('./auth.json');
+var settings = require('./settings.json');
+
+async function print_image(teamsImagesPath, homeTeam, awayTeam, callback) {
+    var imagePath = path.join(module.path, `/images/games/${homeTeam}vs${awayTeam}.png`);
+    // cant have special characters or whitespaces
+    var imageAttachmentName = `${homeTeam}vs${awayTeam}`.replace(/[^a-zA-Z ]|\s/g, "") + ".png";
+    await mergeImg(
+        [
+            `${teamsImagesPath}${homeTeam}.png`,
+            `${teamsImagesPath}${awayTeam}.png`
+        ]).then((img) => {
+            // Save image as file
+            img.write(imagePath, () => {  
+                logger.debug(`Generated image for game ${homeTeam} vs ${awayTeam} at ${path.join(module.path, '/images/games/')}`);
+                callback(imagePath, imageAttachmentName)
+            });
+        });
+}
+
+// formats a Date into the format "year-month-day"
+function GetSimplifiedDate(date) {
+    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
+    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(date)
+    return `${year}-${month}-${day}`
+}
 
 function scheduleGame(game) {
     var gameScheduleDate = new Date(Date.parse(String(game.utcDate)));
@@ -75,11 +78,11 @@ function scheduleGame(game) {
     logger.info(`Match betweeen ${homeTeam} and ${awayTeam} will be announced at ${hours}:${minutes}:${seconds}`);
     schedule.scheduleJob(notificationScheduleDate, function(){
 
-        print_image('./images/teams/', homeTeam, awayTeam, function(imagePath, imageAttachmentName) {
+        print_image(path.join(module.path, '/images/teams/'), homeTeam, awayTeam, function(imagePath, imageAttachmentName) {
             var hours = ("0" + gameScheduleDate.getHours()).slice(-2);
             var minutes = ("0" + gameScheduleDate.getMinutes()).slice(-2);
             var attachments = [
-                new discord.MessageAttachment('./images/Liga Nos.png', 'LigaNos.png'),
+                new discord.MessageAttachment(path.join(module.path, '/images/Liga Nos.png'), 'LigaNos.png'),
                 new discord.MessageAttachment(imagePath, imageAttachmentName)
             ];
             const embedMessage = new discord.MessageEmbed()
@@ -92,12 +95,20 @@ function scheduleGame(game) {
                     { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
                     { name: 'Horário', value: `${hours}:${minutes}h`},
                     { name: 'Canal', value: 'O Tasco :soccer: :beer: :hotdog:' },
-                    { name: 'Bilhetes com', value: `${client.users.cache.get("165606532325572609")} e ${client.users.cache.get("248171304652374017")}` },
+                    { name: 'Bilhetes com', value: `${client.users.cache.get("165606532325572609")} e ${client.users.cache.get(settings.streamer_id)}` },
                 )
                 .setImage(`attachment://${imageAttachmentName}`)
                 .attachFiles(attachments);
             
-            client.channels.cache.get('718031370584195114').send({embed: embedMessage});
+            client.channels.cache.get(settings.channel_notifications).send({embed: embedMessage});
+            const streamerMessage = new discord.MessageEmbed()
+                .setAuthor('Liga NOS', 'attachment://LigaNos.png')
+                .setDescription('Está na hora de abrir o tasco! :smile:')
+                .addFields(
+                    { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
+                    { name: 'Horário', value: `${hours}:${minutes}h`}
+                );
+            client.users.cache.get(settings.streamer_id).send({embed:streamerMessage});
         });
     });
 }
