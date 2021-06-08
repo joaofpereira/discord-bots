@@ -1,35 +1,22 @@
 const discord = require('discord.js');
-const winston = require('winston');
 const schedule = require('node-schedule');
 const request = require('request');
 const mergeImg = require('merge-img');
 const fs = require('fs');
 const path = require('path');
 
-const logger = winston.createLogger({
-    level: 'debug',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.prettyPrint()
-      ),
-    defaultMeta: { service: 'football-announcer' },
-    transports: [
-      new winston.transports.Console({
-        format: winston.format.combine(
-          winston.format.colorize(),
-          winston.format.simple()
-        )
-      }),
-      new winston.transports.File({ filename: 'logs' }),
-    ],
-});
-
-// Create an instance of a Discord client
-const client = new discord.Client();
+// load other files
+var utils = require('./utils');
 
 // authentication tokens and settings
 var auth = require('./auth.json');
 var settings = require('./settings.json');
+var pjson = require('./package.json');
+
+const logger = utils.createLogger(pjson.name)
+
+// Create an instance of a Discord client
+const client = new discord.Client();
 
 async function print_image(teamsImagesPath, homeTeam, awayTeam, season, callback) {
     var dir = path.join(module.path, '/images/games/' + season + '/');
@@ -55,13 +42,6 @@ async function print_image(teamsImagesPath, homeTeam, awayTeam, season, callback
                 callback(imagePath, imageAttachmentName)
             });
         });
-}
-
-// formats a Date into the format "year-month-day"
-function GetSimplifiedDate(date) {
-    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
-    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(date)
-    return `${year}-${month}-${day}`
 }
 
 function scheduleGame(game) {
@@ -104,7 +84,7 @@ function scheduleGame(game) {
             }
             const embedMessage = new discord.MessageEmbed()
                 .setColor('#0099ff')
-                .setTitle(`Liga NOS - ${GetSimplifiedDate(gameScheduleDate)}`)
+                .setTitle(`Liga NOS - ${utils.createSimplifyDate(gameScheduleDate)}`)
                 .setAuthor('Liga NOS', 'attachment://LigaNos.png')
                 .setDescription('Hey, o próximo jogo da Liga NOS está prestes a começar!')
                 .setThumbnail('attachment://LigaNos.png')
@@ -121,7 +101,7 @@ function scheduleGame(game) {
                 personsInCharge.forEach(element => {
                     const personsInChargeMessage = new discord.MessageEmbed()
                         .setColor('#0099ff')
-                        .setTitle(`Liga NOS - ${GetSimplifiedDate(gameScheduleDate)}`)
+                        .setTitle(`Liga NOS - ${utils.createSimplifyDate(gameScheduleDate)}`)
                         .setAuthor('Liga NOS', 'attachment://LigaNos.png')
                         .setDescription('Hey, o próximo jogo da Liga NOS está prestes a começar!')
                         .setThumbnail('attachment://LigaNos.png')
@@ -158,12 +138,12 @@ function processResquestResponse(error, response, body) {
 }
 
 function startDailyScheduleTask() {
-    logger.info("Liga NOS Fetcher ready to starting.");
-    logger.debug("Scheduling job to refresh information about daily matches.");
+    logger.info("Football fetcher is starting...");
+    logger.debug("Scheduling job to retrieve daily matches...");
     schedule.scheduleJob(settings.daily_cron_job, function() {
         if (settings.is_daily_job_active) {
             var todayDate = new Date()
-            todayDate = GetSimplifiedDate(todayDate)
+            todayDate = utils.createSimplifyDate(todayDate)
             todayDate = "2020-09-19"
             var finalUrl = settings.football_data_api + `matches?dateFrom=${todayDate}&dateTo=${todayDate}&competitions=${settings.football_data_competitions}`
     
