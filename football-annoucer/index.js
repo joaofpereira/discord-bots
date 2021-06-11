@@ -47,9 +47,9 @@ async function print_image(teamsImagesPath, homeTeam, awayTeam, season, callback
 function scheduleGame(game) {
     var gameScheduleDate = new Date(Date.parse(String(game.utcDate)));
     var notificationScheduleDate = new Date(gameScheduleDate);
-    notificationScheduleDate = new Date()
-    notificationScheduleDate.setSeconds(notificationScheduleDate.getSeconds() + 10)
-    //notificationScheduleDate.setMinutes(notificationScheduleDate.getMinutes() - 15)
+    //notificationScheduleDate = new Date()
+    //notificationScheduleDate.setSeconds(notificationScheduleDate.getSeconds() + 10)
+    notificationScheduleDate.setMinutes(notificationScheduleDate.getMinutes() - 15)
 
     var hours = ("0" + notificationScheduleDate.getHours()).slice(-2);
     var minutes = ("0" + notificationScheduleDate.getMinutes()).slice(-2);
