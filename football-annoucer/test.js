@@ -1,23 +1,45 @@
 const request = require('request');
+const { Client, Intents  } = require('discord.js');
 
 // authentication tokens and settings
 var auth = require('./auth.json');
 var settings = require('./settings.json');
 
-settings.football_data_competitions.forEach(element => {
-    console.log(element)
-});
+const myIntents = new Intents();
+myIntents.add('GUILD_PRESENCES', 'GUILD_MEMBERS');
 
-var todayDate = new Date()
-todayDate = GetSimplifiedDate(todayDate)
-todayDate = "2020-09-19"
-var finalUrl = settings.football_data_api + `matches?dateFrom=${todayDate}&dateTo=${todayDate}&competitions=${settings.football_data_competitions}`
+// Create an instance of a Discord client
+const client = new Client({ ws: { intents: myIntents } });
 
-console.log(finalUrl)
+client.login(auth.discord_token);
 
-// formats a Date into the format "year-month-day"
-function GetSimplifiedDate(date) {
-    const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
-    const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(date)
-    return `${year}-${month}-${day}`
+var result = "";
+
+const id = "165606532325572609"
+
+async function fetchUser(id) {
+    try {
+        return user = await client.users.fetch(id)
+    }
+    catch (error) {
+        console.log(error)
+    }
 }
+
+const c = client.users.find(u => u.id == id)
+console.log(c.username)
+
+let user = fetchUser(id)
+
+console.log(user);
+
+/*var user = client.users.fetch(id)
+    .then(u => {
+        console.log(`${u.username}`)
+    })
+    .catch(e => {
+        console.log(`${e}CATCH`)
+    });
+
+console.log(result)
+*/

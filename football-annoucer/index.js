@@ -19,7 +19,7 @@ const logger = utils.createLogger(pjson.name)
 const client = new discord.Client();
 
 async function print_image(teamsImagesPath, homeTeam, awayTeam, season, callback) {
-    var dir = path.join(module.path, '/images/games/' + season + '/');
+    var dir = path.join(module.path, '/images/Euro2020/games/' + season + '/');
 
     // creating folder to put matches generated images
     if (!fs.existsSync(dir)){
@@ -62,37 +62,39 @@ function scheduleGame(game) {
     logger.info(`Match betweeen ${homeTeam} and ${awayTeam} will be announced at ${hours}:${minutes}:${seconds}`);
     schedule.scheduleJob(notificationScheduleDate, function(){
 
-        print_image(path.join(module.path, '/images/teams/'), homeTeam, awayTeam, season, function(imagePath, imageAttachmentName) {
+        print_image(path.join(module.path, '/images/Euro2020/teams/'), homeTeam, awayTeam, season, function(imagePath, imageAttachmentName) {
             var hours = ("0" + gameScheduleDate.getHours()).slice(-2);
             var minutes = ("0" + gameScheduleDate.getMinutes()).slice(-2);
             var attachments = [
-                new discord.MessageAttachment(path.join(module.path, '/images/Liga Nos.png'), 'LigaNos.png'),
+                new discord.MessageAttachment(path.join(module.path, '/images/Euro2020/Euro2020.png'), 'Euro2020.png'),
                 new discord.MessageAttachment(imagePath, imageAttachmentName)
             ];
 
-            var personsInChargeResultStr = "";
             var personsInCharge = settings.persons_in_charge.split(",");
-            if (personsInCharge.length > 0) {
-                personsInCharge.forEach(function(element, i) {
+            var personsInChargeResultStr = "";
+            /*if (personsInCharge.length > 0) {
+                personsInCharge.forEach(async function(element, i) {
                     if (i != 0 && i < personsInCharge.length - 1) {
                         personsInChargeResultStr += ", ";
                     } else if (i != 0 && i == personsInCharge.length - 1) {
                         personsInChargeResultStr += " ou ";
                     }
-                    personsInChargeResultStr += `${client.users.cache.get(element)}`;
+                    var user = await client.users.fetch(element)
+                    personsInChargeResultStr += `${user.username}`;
+                    
                 });
-            }
+            }*/
             const embedMessage = new discord.MessageEmbed()
                 .setColor('#0099ff')
-                .setTitle(`Liga NOS - ${utils.createSimplifyDate(gameScheduleDate)}`)
-                .setAuthor('Liga NOS', 'attachment://LigaNos.png')
-                .setDescription('Hey, o próximo jogo da Liga NOS está prestes a começar!')
-                .setThumbnail('attachment://LigaNos.png')
+                .setTitle(`Euro 2020 - ${utils.createSimplifyDate(gameScheduleDate)}`)
+                .setAuthor('Euro 2020', 'attachment://Euro2020.png')
+                .setDescription('Hey, o próximo jogo do Euro 2020 está prestes a começar!')
+                .setThumbnail('attachment://Euro2020.png')
                 .addFields(
                     { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
                     { name: 'Horário', value: `${hours}:${minutes}h`},
                     { name: 'Canal', value: 'O Tasco :soccer: :beer: :hotdog:' },
-                    { name: 'Bilhetes com', value: personsInChargeResultStr },
+                    //{ name: 'Bilhetes com', value: personsInChargeResultStr },
                 )
                 .setImage(`attachment://${imageAttachmentName}`)
                 .attachFiles(attachments);
@@ -101,10 +103,10 @@ function scheduleGame(game) {
                 personsInCharge.forEach(element => {
                     const personsInChargeMessage = new discord.MessageEmbed()
                         .setColor('#0099ff')
-                        .setTitle(`Liga NOS - ${utils.createSimplifyDate(gameScheduleDate)}`)
-                        .setAuthor('Liga NOS', 'attachment://LigaNos.png')
-                        .setDescription('Hey, o próximo jogo da Liga NOS está prestes a começar!')
-                        .setThumbnail('attachment://LigaNos.png')
+                        .setTitle(`Euro 2020 - ${utils.createSimplifyDate(gameScheduleDate)}`)
+                        .setAuthor('Euro 2020', 'attachment://Euro2020.png')
+                        .setDescription('Hey, o próximo jogo da Euro 2020 está prestes a começar!')
+                        .setThumbnail('attachment://Euro2020.png')
                         .addFields(
                             { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
                             { name: 'Horário', value: `${hours}:${minutes}h`},
@@ -112,12 +114,12 @@ function scheduleGame(game) {
                         .setImage(`attachment://${imageAttachmentName}`)
                         .attachFiles(attachments);
 
-                    client.users.cache.get(element).send({embed: personsInChargeMessage});
+                    client.users.fetch(element).then(user => user.send({embed: personsInChargeMessage}));
                     });
             }
             
             if (settings.announcements_channel.trim())
-                client.channels.cache.get(settings.announcements_channel).send({embed: embedMessage});
+                client.channels.fetch(settings.announcements_channel).then(channel => channel.send({embed: embedMessage}));
         });
     });
 }
@@ -138,14 +140,15 @@ function processResquestResponse(error, response, body) {
 }
 
 function startDailyScheduleTask() {
-    logger.info("Football fetcher is starting...");
+    logger.info("Fetcher is starting...");
     logger.debug("Scheduling job to retrieve daily matches...");
-    schedule.scheduleJob(settings.daily_cron_job, function() {
-        if (settings.is_daily_job_active) {
+    settings.football_data_competitions.forEach(element => {
+        if (element.active)
+        {
+            schedule.scheduleJob(element.daily_cron_job, function() {
             var todayDate = new Date()
             todayDate = utils.createSimplifyDate(todayDate)
-            todayDate = "2020-09-19"
-            var finalUrl = settings.football_data_api + `matches?dateFrom=${todayDate}&dateTo=${todayDate}&competitions=${settings.football_data_competitions}`
+            var finalUrl = settings.football_data_api + `matches?dateFrom=${todayDate}&dateTo=${todayDate}&competitions=${element.id}`
     
             logger.debug("Fetching daily matches request: " + finalUrl)
             const options = {
@@ -155,16 +158,15 @@ function startDailyScheduleTask() {
                 }
             };
             
-            request(options, processResquestResponse) 
+            request(options, processResquestResponse)
+        });
         }
     });
 }
 
 
 client.on('ready', () => {
-    if (settings.is_daily_job_active) {
-        startDailyScheduleTask()
-    }
+    startDailyScheduleTask()
 });
 
 // Create an event listener for messages
