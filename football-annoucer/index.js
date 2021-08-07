@@ -19,7 +19,7 @@ const logger = utils.createLogger(pjson.name)
 const client = new discord.Client();
 
 async function print_image(teamsImagesPath, homeTeam, awayTeam, season, callback) {
-    var dir = path.join(module.path, '/images/Euro2020/games/' + season + '/');
+    var dir = path.join(module.path, '/images/LigaPortugalBwin/games/' + season + '/');
 
     // creating folder to put matches generated images
     if (!fs.existsSync(dir)){
@@ -62,11 +62,11 @@ function scheduleGame(game) {
     logger.info(`Match betweeen ${homeTeam} and ${awayTeam} will be announced at ${hours}:${minutes}:${seconds}`);
     schedule.scheduleJob(notificationScheduleDate, function(){
 
-        print_image(path.join(module.path, '/images/Euro2020/teams/'), homeTeam, awayTeam, season, function(imagePath, imageAttachmentName) {
+        print_image(path.join(module.path, '/images/LigaPortugalBwin/teams/'), homeTeam, awayTeam, season, function(imagePath, imageAttachmentName) {
             var hours = ("0" + gameScheduleDate.getHours()).slice(-2);
             var minutes = ("0" + gameScheduleDate.getMinutes()).slice(-2);
             var attachments = [
-                new discord.MessageAttachment(path.join(module.path, '/images/Euro2020/Euro2020.png'), 'Euro2020.png'),
+                new discord.MessageAttachment(path.join(module.path, '/images/LigaPortugalBwin/LigaPortugalBwin.png'), 'LigaPortugalBwin.png'),
                 new discord.MessageAttachment(imagePath, imageAttachmentName)
             ];
 
@@ -87,9 +87,9 @@ function scheduleGame(game) {
             const embedMessage = new discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle(`Euro 2020 - ${utils.createSimplifyDate(gameScheduleDate)}`)
-                .setAuthor('Euro 2020', 'attachment://Euro2020.png')
-                .setDescription('Hey, o próximo jogo do Euro 2020 está prestes a começar!')
-                .setThumbnail('attachment://Euro2020.png')
+                .setAuthor('Euro 2020', 'attachment://LigaPortugalBwin.png')
+                .setDescription('Hey, o próximo jogo da Liga Portugal Bwin está prestes a começar!')
+                .setThumbnail('attachment://LigaPortugalBwin.png')
                 .addFields(
                     { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
                     { name: 'Horário', value: `${hours}:${minutes}h`},
@@ -104,9 +104,9 @@ function scheduleGame(game) {
                     const personsInChargeMessage = new discord.MessageEmbed()
                         .setColor('#0099ff')
                         .setTitle(`Euro 2020 - ${utils.createSimplifyDate(gameScheduleDate)}`)
-                        .setAuthor('Euro 2020', 'attachment://Euro2020.png')
-                        .setDescription('Hey, o próximo jogo da Euro 2020 está prestes a começar!')
-                        .setThumbnail('attachment://Euro2020.png')
+                        .setAuthor('Euro 2020', 'attachment://LigaPortugalBwin.png')
+                        .setDescription('Hey, o próximo jogo da Liga Portugal Bwin está prestes a começar!')
+                        .setThumbnail('attachment://LigaPortugalBwin.png')
                         .addFields(
                             { name: 'Próximo Jogo', value: `${homeTeam} vs ${awayTeam}` },
                             { name: 'Horário', value: `${hours}:${minutes}h`},
@@ -181,7 +181,7 @@ client.on('message', message => {
             case 'help':
                 const embed = 
                 {
-                    title: 'Liga NOS Fetcher Commands',
+                    title: 'Football Annourcer Commands',
                     fields: [{
                             name: 'Prefix (+)',
                             value: `Example: +help`
