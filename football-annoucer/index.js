@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 // load other files
-var utils = require('./utils');
+var utils = require('./logger');
 
 // authentication tokens and settings
 var auth = require('./auth.json');

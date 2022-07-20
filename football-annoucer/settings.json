@@ -5,14 +5,9 @@
         {
             "name": "Liga Portugal Bwin",
             "id": 2017,
+            "season-id": 
             "daily_cron_job": "0 12 * * *",
             "active": true
-        },
-        {
-            "name": "Euro 2020",
-            "id": 2018,
-            "daily_cron_job": "*/2 * * * *",
-            "active": false
         }
     ],
     "announcements_channel": "",
