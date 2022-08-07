@@ -1,3 +1,0 @@
-# football-annoucer
-
-TBD

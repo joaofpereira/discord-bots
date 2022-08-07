@@ -1,0 +1,62 @@
+const { competitions, token } = require('./config.json');
+const logger = require('./logger');
+
+const fs = require('node:fs');
+const path = require('node:path');
+
+// Require the necessary discord.js classes
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
+
+// Set environment variables for paths
+global.imagesGenerationPath = `${path.join(__dirname, 'matches-images/')}`;
+global.dummyCrest = `${path.join(__dirname, 'logos/dummy.png')}`;
+global.competitionsPath = `${path.join(__dirname, 'logos/competitions/')}`;
+
+// creating folder to put matches generated images
+if (!fs.existsSync(global.imagesGenerationPath)) {
+	fs.mkdirSync(global.imagesGenerationPath, { recursive: true }, err => {
+		logger.error(`Something went wrong when trying to folder for generated images. ${err}`);
+	});
+}
+
+// Load default active competitions
+global.activeCompetitions = [];
+for (const competition of competitions) {
+	if (competition.active) {
+		global.activeCompetitions.push(competition.id);
+	}
+}
+
+// Create a new client instance
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+// Build event handler
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(client, ...args));
+	}
+	else {
+		client.on(event.name, (...args) => event.execute(client, ...args));
+	}
+}
+
+// Attach commands to the client
+client.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.commands.set(command.data.name, command);
+}
+
+// Login to Discord with your client's token
+client.login(token);

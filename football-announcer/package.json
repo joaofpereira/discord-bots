@@ -1,0 +1,37 @@
+{
+  "name": "football-announcer",
+  "version": "2.0.0",
+  "description": "A bot that fetches games daily and announces its starting in a discord channel.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaofpereira/discord-bots.git"
+  },
+  "keywords": [
+    "football"
+  ],
+  "author": "João Pereira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joaofpereira/discord-bots/issues"
+  },
+  "homepage": "https://github.com/joaofpereira/discord-bots#readme",
+  "dependencies": {
+    "@discordjs/rest": "^1.0.1",
+    "axios": "^0.27.2",
+    "date-and-time": "^2.4.1",
+    "discord.js": "^14.1.2",
+    "dotenv": "^16.0.1",
+    "merge-img": "^2.1.3",
+    "node-schedule": "^2.1.0",
+    "sharp": "^0.30.7",
+    "svg-to-png": "^4.0.0",
+    "winston": "^3.8.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.21.0"
+  }
+}

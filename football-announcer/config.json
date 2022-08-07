@@ -1,0 +1,41 @@
+{
+    "token": "",
+    "clientId": "",
+    "guildId": "",
+    "footballApiToken": "",
+    "notificationsChannel": "",
+    "dailyCronJob": "0 5 * * *",
+    "fetcherMode": 2,
+    "competitions": [
+        {
+            "name": "Liga Portugal Bwin",
+            "id": 2017,
+            "active": true,
+            "flag_emoji": ":flag_pt:"
+        },
+        {
+            "name": "Premier League",
+            "id": 2021,
+            "active": false,
+            "flag_emoji": ":flag_gb:"
+        },
+        {
+            "name": "Bundesliga",
+            "id": 2002,
+            "active": false,
+            "flag_emoji": ":flag_de:"
+        },
+        {
+            "name": "La Liga",
+            "id": 2014,
+            "active": false,
+            "flag_emoji": ":flag_es:"
+        },
+        {
+            "name": "FIFA World Cup",
+            "id": 2000,
+            "active": false,
+            "flag_emoji": ":trophy:"
+        }
+    ]
+}
