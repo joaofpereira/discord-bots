@@ -7,8 +7,6 @@ module.exports = {
 		.setDescription('Lists all active competitions for notifications.'),
 	async execute(interaction) {
 		let output = '';
-		console.log('Hello World');
-		console.log(global.activeCompetitions);
 		global.activeCompetitions.forEach(competitionId => {
 			const competitionDetails = getCompetitionDetails(competitionId);
 			output += `${competitionDetails.flag_emoji} ${competitionDetails.name}\n`;
