@@ -1,9 +1,0 @@
-{
-    "daily_cron_job": "0 12 * * *",
-    "bot_prefix_command": "+",
-    "football_data_api": "http://api.football-data.org/v2/",
-    "football_data_competitions": "2017",
-    "is_daily_job_active": true,
-    "announcements_channel": "",
-    "persons_in_charge": ""
-}
