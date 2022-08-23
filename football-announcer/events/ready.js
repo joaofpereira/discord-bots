@@ -7,8 +7,8 @@ const path = require('path');
 const fs = require('fs');
 const scheduler = require('node-schedule');
 const dateUtils = require('date-and-time');
-const mergeImg = require('merge-img');
-const svg2png = require('svg-to-png');
+const { joinImages } = require('join-images');
+// const svg2png = require('svg-to-png');
 const axios = require('axios');
 const sharp = require('sharp');
 const { EmbedBuilder } = require('discord.js');
@@ -98,19 +98,23 @@ async function scaleImages(homeTeamCrestFilePath, awayTeamCrestFilePath) {
 async function joinImage(match, homeTeamCrestFilePath, awayTeamCrestFilePath) {
 
 	const imagePath = path.join(global.imagesGenerationPath, `${match.id}.png`);
-	await mergeImg(
+	await joinImages(
 		[
 			homeTeamCrestFilePath,
 			awayTeamCrestFilePath,
-		]).then((img) => {
-		img.write(imagePath, () => {
-			// logger.debug(`Generated image for game ${match.homeTeam.name} vs ${match.awayTeam.name} at ${imagePath}`);
+		], {
+			direction: 'horizontal',
+			color: { alpha: 0, b: 0, g: 0, r: 255 },
+		})
+		.then(async (img) => {
+			logger.debug(`Generated image for game ${match.homeTeam.name} vs ${match.awayTeam.name} at ${imagePath}`);
+			await img.toFile(imagePath);
 		});
-	});
 	// fs.unlink(homeTeamCrestFilePath, (err) => { logger.error(`Error deleting file ${homeTeamCrestFilePath}. Exception: ${err}`); });
 	// fs.unlink(awayTeamCrestFilePath, (err) => { logger.error(`Error deleting file ${awayTeamCrestFilePath}. Exception: ${err}`); });
 }
 
+/*
 async function try2ConvertSvg(crestSvgFilePath) {
 	if (path.extname(crestSvgFilePath) == '.svg') {
 		const parentDir = path.dirname(crestSvgFilePath);
@@ -122,7 +126,9 @@ async function try2ConvertSvg(crestSvgFilePath) {
 	}
 	return [false, null];
 }
+*/
 
+/*
 async function downloadCrest(team) {
 	// home team image download
 	let teamCrestFilePath = null;
@@ -144,6 +150,13 @@ async function downloadCrest(team) {
 		return null;
 	}
 }
+*/
+
+function sleep(ms) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
 
 async function scheduleMatch(client, match, fMode) {
 	const homeTeam = await fetcher.getTeam(match.homeTeam.id);
@@ -154,9 +167,9 @@ async function scheduleMatch(client, match, fMode) {
 	let awayTeamCrestFilePath = null;
 	if (fMode == fetcherModeEnum.download) {
 		// home team image download
-		homeTeamCrestFilePath = await downloadCrest(homeTeam);
+		// homeTeamCrestFilePath = await downloadCrest(homeTeam);
 		// away team image download
-		awayTeamCrestFilePath = await downloadCrest(awayTeam);
+		// awayTeamCrestFilePath = await downloadCrest(awayTeam);
 	}
 	else {
 		homeTeamCrestFilePath = `${path.join(global.competitionsPath, match.competition.id.toString(), 'teams', homeTeam.id.toString())}.png`;
@@ -166,6 +179,7 @@ async function scheduleMatch(client, match, fMode) {
 	const scaledImagesPath = await scaleImages(homeTeamCrestFilePath, awayTeamCrestFilePath);
 
 	await joinImage(match, scaledImagesPath[0], scaledImagesPath[1]);
+	// await sleep(1000);
 	const competitionName = getCompetitionDetails(match.competition.id).name;
 
 	const competitionId = match.competition.id.toString();
@@ -204,11 +218,11 @@ async function scheduleMatch(client, match, fMode) {
 }
 
 async function processMatch(client, match, fMode) {
-	const matchDate = new Date(Date.parse(String(match.utcDate)));
+	const matchDate = new Date();
+	// const matchDate = new Date(Date.parse(String(match.utcDate)));
 	logger.info(`Schedule date is: ${matchDate}`);
-	// const matchDate = new Date();
-	// matchDate.setSeconds(matchDate.getSeconds() + 10);
-	matchDate.setMinutes(matchDate.getMinutes() - 15);
+	matchDate.setSeconds(matchDate.getSeconds() + 10);
+	// matchDate.setMinutes(matchDate.getMinutes() - 15);
 
 	const hours = ('0' + matchDate.getHours()).slice(-2);
 	const minutes = ('0' + matchDate.getMinutes()).slice(-2);
@@ -227,12 +241,12 @@ module.exports = {
 	async execute(client) {
 		logger.info(`Ready! Logged in as ${client.user.tag}`);
 		logger.info('Football fetcher is starting...');
-		// const now = new Date();
-		// now.setSeconds(now.getSeconds() + 10);
-		// logger.info(now);
-		// scheduler.scheduleJob(now, async function() {
-		scheduler.scheduleJob(dailyCronJob, async function() {
-			const today = new Date();
+		const now = new Date();
+		now.setSeconds(now.getSeconds() + 10);
+		logger.info(now);
+		scheduler.scheduleJob(now, async function() {
+		// scheduler.scheduleJob(dailyCronJob, async function() {
+			const today = new Date(2022, 7, 22);
 			const startDateFormatted = dateUtils.format(today, 'YYYY-MM-DD');
 			const endDateFormatted = startDateFormatted;
 			for (const activeCompetition of global.activeCompetitions) {
