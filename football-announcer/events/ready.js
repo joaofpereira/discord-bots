@@ -159,8 +159,12 @@ function sleep(ms) {
 }
 
 async function scheduleMatch(client, match, fMode) {
-	const homeTeam = await fetcher.getTeam(match.homeTeam.id);
-	const awayTeam = await fetcher.getTeam(match.awayTeam.id);
+	// commented to save requests to the API
+	// const homeTeam = await fetcher.getTeam(match.homeTeam.id);
+	// const awayTeam = await fetcher.getTeam(match.awayTeam.id);
+
+	const homeTeam = match.homeTeam;
+	const awayTeam = match.awayTeam;
 
 	logger.info(`Processing match ${homeTeam.name} vs ${awayTeam.name}`);
 	let homeTeamCrestFilePath = null;
