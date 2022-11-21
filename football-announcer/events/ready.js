@@ -210,13 +210,14 @@ async function scheduleMatch(client, match, fMode) {
 		.setImage(`attachment://${matchId}.png`)
 		.addFields(
 			{ name: 'Próximo Jogo', value: `${homeTeam.name} vs ${awayTeam.name}` },
-			{ name: 'Horário', value: `${matchDate.getHours()}:${matchDate.getMinutes()}h` },
+			{ name: 'Horário', value: `${String(matchDate.getHours()).padStart(2, '0')}:${String(matchDate.getMinutes()).padStart(2, '0')}h` },
 			{ name: 'Canal', value: 'O Tasco :soccer: :beer: :hotdog:' },
 			// { name: 'Bilhetes com', value: personsInChargeResultStr },
 		);
 
+	const previewMessage = `⚽ ${homeTeam.name} vs ${awayTeam.name}`;
 	const announcementsChannel = await client.channels.cache.get(notificationsChannel);
-	await announcementsChannel.send({ embeds: [embedMessage], files: attachments })
+	await announcementsChannel.send({ content: previewMessage, embeds: [embedMessage], files: attachments })
 		.then(logger.info(`Announcement made for ${homeTeam.name} vs ${awayTeam.name}.`))
 		.catch(console.error);
 }
@@ -251,6 +252,7 @@ module.exports = {
 		// scheduler.scheduleJob(now, async function() {
 		scheduler.scheduleJob(dailyCronJob, async function() {
 			const today = new Date();
+			// const today = new Date(2022, 9, 21);
 			const startDateFormatted = dateUtils.format(today, 'YYYY-MM-DD');
 			const endDateFormatted = startDateFormatted;
 			for (const activeCompetition of global.activeCompetitions) {
