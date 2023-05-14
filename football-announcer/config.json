@@ -36,6 +36,24 @@
             "id": 2000,
             "active": false,
             "flag_emoji": ":trophy:"
+        },
+        {
+            "name": "UEFA Champions League",
+            "id": 2001,
+            "active": false,
+            "flag_emoji": ":soccer:"
+        },
+        {
+            "name": "Ligue 1 Uber Eats",
+            "id": 2015,
+            "active": false,
+            "flag_emoji": ":flag_fr:"
+        },
+        {
+            "name": "Serie A",
+            "id": 2019,
+            "active": false,
+            "flag_emoji": ":flag_it:"
         }
     ]
 }
