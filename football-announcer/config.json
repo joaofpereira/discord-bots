@@ -8,9 +8,9 @@
     "fetcherMode": 2,
     "competitions": [
         {
-            "name": "Liga Portugal Bwin",
+            "name": "Liga Portugal",
             "id": 2017,
-            "active": true,
+            "active": false,
             "flag_emoji": ":flag_pt:"
         },
         {
@@ -26,7 +26,7 @@
             "flag_emoji": ":flag_de:"
         },
         {
-            "name": "La Liga",
+            "name": "LaLiga EA Sports",
             "id": 2014,
             "active": false,
             "flag_emoji": ":flag_es:"
