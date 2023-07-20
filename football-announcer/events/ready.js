@@ -15,18 +15,6 @@ const { EmbedBuilder } = require('discord.js');
 
 const fetcherModeEnum = Object.freeze({ 'download': 1, 'local': 2 });
 
-function cleanGeneratedImages() {
-	fs.readdir(global.imagesGenerationPath, (err, files) => {
-		if (err) throw err;
-
-		for (const file of files) {
-			fs.unlink(path.join(global.imagesGenerationPath, file), err => {
-				if (err) throw err;
-			});
-		}
-	});
-}
-
 async function downloadImage(imageUrl, imagePath) {
 	await axios({
 		method: 'get',
@@ -112,6 +100,16 @@ async function joinImage(match, homeTeamCrestFilePath, awayTeamCrestFilePath) {
 		});
 	// fs.unlink(homeTeamCrestFilePath, (err) => { logger.error(`Error deleting file ${homeTeamCrestFilePath}. Exception: ${err}`); });
 	// fs.unlink(awayTeamCrestFilePath, (err) => { logger.error(`Error deleting file ${awayTeamCrestFilePath}. Exception: ${err}`); });
+}
+
+async function cleanGeneratedImages() {
+	await fs.readdir(global.imagesGenerationPath, (err, files) => {
+		if (err) throw err;
+
+		for (const file of files) {
+			fs.unlinkSync(path.join(global.imagesGenerationPath, file));
+		}
+	});
 }
 
 /*
@@ -220,6 +218,8 @@ async function scheduleMatch(client, match, fMode) {
 	await announcementsChannel.send({ content: previewMessage, embeds: [embedMessage], files: attachments })
 		.then(logger.info(`Announcement made for ${homeTeam.name} vs ${awayTeam.name}.`))
 		.catch(console.error);
+
+	await cleanGeneratedImages();
 }
 
 async function processMatch(client, match, fMode) {
@@ -263,7 +263,6 @@ module.exports = {
 					await processMatch(client, match, fetcherMode);
 				}
 			}
-			cleanGeneratedImages();
 		});
 	},
 };
