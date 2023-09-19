@@ -1,0 +1,13 @@
+[Unit]
+Description=FootballAnnouncer.js - A bot that announces football games on Discord
+After=network.target
+
+[Service]
+Environment=NODE_PORT=3001
+Type=simple
+User=root
+ExecStart=/usr/bin/node /home/osmc/git/discord-bots/football-announcer/index.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
