@@ -21,7 +21,7 @@
   "homepage": "https://github.com/joaofpereira/discord-bots#readme",
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
-    "axios": "^0.27.2",
+    "axios": "^1.7.0",
     "date-and-time": "^2.4.1",
     "discord.js": "^14.1.2",
     "dotenv": "^16.0.1",
