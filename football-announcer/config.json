@@ -54,6 +54,13 @@
             "id": 2019,
             "active": false,
             "flag_emoji": ":flag_it:"
+        },
+        {
+            "name": "Euro 2024",
+            "id": 2018,
+            "active": true,
+            "flag_emoji": ":soccer:"
+
         }
     ]
 }
