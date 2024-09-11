@@ -223,10 +223,10 @@ async function scheduleMatch(client, match, fMode) {
 }
 
 async function processMatch(client, match, fMode) {
-	// const matchDate = new Date();
+	//const matchDate = new Date();
 	const matchDate = new Date(Date.parse(String(match.utcDate)));
 	logger.info(`Schedule date is: ${matchDate}`);
-	// matchDate.setSeconds(matchDate.getSeconds() + 10);
+	//matchDate.setSeconds(matchDate.getSeconds() + 10);
 	matchDate.setMinutes(matchDate.getMinutes() - 15);
 
 	const hours = ('0' + matchDate.getHours()).slice(-2);
@@ -246,15 +246,18 @@ module.exports = {
 	async execute(client) {
 		logger.info(`Ready! Logged in as ${client.user.tag}`);
 		logger.info('Football fetcher is starting...');
-		// const now = new Date();
-		// now.setSeconds(now.getSeconds() + 10);
-		// logger.info(now);
-		// scheduler.scheduleJob(now, async function() {
+		//const now = new Date();
+		//now.setSeconds(now.getSeconds() + 10);
+		//logger.info(now);
+		//scheduler.scheduleJob(now, async function() {
 		scheduler.scheduleJob(dailyCronJob, async function() {
 			const today = new Date();
-			// const today = new Date(2022, 9, 21);
 			const startDateFormatted = dateUtils.format(today, 'YYYY-MM-DD');
-			const endDateFormatted = startDateFormatted;
+			const endDateFormatted = dateUtils.format(today, 'YYYY-MM-DD');
+			//const startDate = new Date(2024, 7, 15);
+			//const endDate = new Date(2024, 7, 25);
+			//const startDateFormatted = dateUtils.format(startDate, 'YYYY-MM-DD');
+			//const endDateFormatted = dateUtils.format(endDate, 'YYYY-MM-DD');
 			for (const activeCompetition of global.activeCompetitions) {
 				const matches = await fetcher.fetchMatches(startDateFormatted, endDateFormatted, activeCompetition);
 
